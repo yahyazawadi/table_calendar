@@ -629,7 +629,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                     (shorterSide - widget.calendarStyle.cellMargin.vertical) *
                     widget.calendarStyle.rangeHighlightScale,
                 //color: widget.calendarStyle.rangeHighlightColor,
-                color: highlightColor.withOpacity(0.4),
+                color: highlightColor.withOpacity(0.8),
               ),
             );
           }
