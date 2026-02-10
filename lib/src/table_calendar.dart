@@ -602,10 +602,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
 
         final children = <Widget>[];
 
-        final isWithinRange =
-            widget.rangeStartDay != null &&
-            widget.rangeEndDay != null &&
-            _isWithinRange(day, widget.rangeStartDay!, widget.rangeEndDay!);
+        final isWithinRange = _isWithinRange(day);
 
         final isRangeStart = isSameDay(day, widget.rangeStartDay);
         final isRangeEnd = isSameDay(day, widget.rangeEndDay);
@@ -761,9 +758,8 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
   }
 
   bool _isWithinRange(DateTime day) {
-    // Custom multi-ranges: check any range covers the day
-    for (var range in multiRanges) {
-      // Include start and end days explicitly (better edge handling)
+    // Check multi ranges first (multi-purpose)
+    for (var range in widget.multiRanges) {
       if (isSameDay(day, range.start) || isSameDay(day, range.end)) {
         return true;
       }
@@ -771,17 +767,17 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
         return true;
       }
     }
-
-    // Original single-range fallback (exact match to package logic)
-    if (_rangeStart != null && _rangeEnd != null) {
-      if (isSameDay(day, _rangeStart) || isSameDay(day, _rangeEnd)) {
+    // Original single range fallback using widget props
+    final rangeStart = widget.rangeStartDay;
+    final rangeEnd = widget.rangeEndDay;
+    if (rangeStart != null && rangeEnd != null) {
+      if (isSameDay(day, rangeStart) || isSameDay(day, rangeEnd)) {
         return true;
       }
-      if (day.isAfter(_rangeStart!) && day.isBefore(_rangeEnd!)) {
+      if (day.isAfter(rangeStart) && day.isBefore(rangeEnd)) {
         return true;
       }
     }
-
     return false;
   }
 
@@ -835,7 +831,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
   }
 
   Color? getRangeColor(DateTime day) {
-    for (var range in multiRanges) {
+    for (var range in widget.multiRanges) {
       if (day.isAfter(range.start.subtract(const Duration(days: 1))) &&
           day.isBefore(range.end.add(const Duration(days: 1)))) {
         return range.color; // Direct from range (multi-purpose)
