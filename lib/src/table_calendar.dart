@@ -1,5 +1,6 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
+
 import 'shared/date_range.dart';
 import 'dart:math';
 
@@ -190,7 +191,7 @@ class TableCalendar<T> extends StatefulWidget {
   /// Called whenever any disabled day gets tapped.
   final void Function(DateTime day)? onDisabledDayTapped;
 
-  /// yahya added this: List of multiple date ranges to highlight, each with its own color.
+  /// List of multiple date ranges to highlight, each with its own color.
   final List<DateRange> multiRanges;
 
   /// Called whenever any disabled day gets long pressed.
@@ -262,13 +263,13 @@ class TableCalendar<T> extends StatefulWidget {
     this.onDaySelected,
     this.onDayLongPressed,
     this.onDisabledDayTapped,
+    this.multiRanges = const [],
     this.onDisabledDayLongPressed,
     this.onHeaderTapped,
     this.onHeaderLongPressed,
     this.onPageChanged,
     this.onFormatChanged,
     this.onCalendarCreated,
-    this.multiRanges = const [],
   }) : assert(availableCalendarFormats.keys.contains(calendarFormat)),
        assert(availableCalendarFormats.length <= CalendarFormat.values.length),
        assert(
@@ -586,63 +587,253 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     );
   }
 
+  //   Widget _buildCell(DateTime day, DateTime focusedDay) {
+  //     final isOutside = day.month != focusedDay.month;
+
+  //     if (isOutside && _shouldBlockOutsideDays) {
+  //       return Container();
+  //     }
+  // final isSingleDay = isRangeStart && isRangeEnd;
+
+  // if (isSingleDay) {
+  //   borderRadius = BorderRadius.circular(999);           // perfect circle
+  //   // or: BorderRadius.circular(50), if you want slightly less aggressive roundness
+  // } else if (isRangeStart) {
+  //   borderRadius = const BorderRadius.horizontal(left: Radius.circular(20));
+  // } else if (isRangeEnd) {
+  //   borderRadius = const BorderRadius.horizontal(right: Radius.circular(20));
+  // }
+  //     return LayoutBuilder(
+  //       builder: (context, constraints) {
+  //         final shorterSide =
+  //             constraints.maxHeight > constraints.maxWidth
+  //                 ? constraints.maxWidth
+  //                 : constraints.maxHeight;
+
+  //         final children = <Widget>[];
+
+  //         final isWithinRange = _isWithinRangeMulti(day);
+  //         final isRangeStart = _isRangeStartDay(day);
+  //         final isRangeEnd = _isRangeEndDay(day);
+
+  //         Widget? rangeHighlight = widget.calendarBuilders.rangeHighlightBuilder
+  //             ?.call(context, day, isWithinRange);
+
+  //         if (rangeHighlight == null) {
+  //           if (isWithinRange) {
+  //             Color? color = widget.calendarStyle.rangeHighlightColor;
+  //             if (widget.multiRanges.isNotEmpty) {
+  //               color = getRangeColor(day) ?? color;
+  //             }
+  //             if (color != null) {
+  //               BorderRadius? borderRadius;
+  //               bool isSingleDay = isRangeStart && isRangeEnd;
+
+  //               if (!isSingleDay) {
+  //                 // Only round for multi-day
+  //                 if (isRangeStart) {
+  //                   borderRadius = const BorderRadius.horizontal(
+  //                     left: Radius.circular(20),
+  //                   );
+  //                 } else if (isRangeEnd) {
+  //                   borderRadius = const BorderRadius.horizontal(
+  //                     right: Radius.circular(20),
+  //                   );
+  //                 }
+  //               }
+  //               if (isRangeStart) {
+  //                 borderRadius = const BorderRadius.horizontal(
+  //                   left: Radius.circular(20),
+  //                 );
+  //               } else if (isRangeEnd) {
+  //                 borderRadius = const BorderRadius.horizontal(
+  //                   right: Radius.circular(20),
+  //                 );
+  //               }
+  //               rangeHighlight = Center(
+  //                 child: Container(
+  //                   margin: EdgeInsetsDirectional.only(
+  //                     start: isRangeStart ? 0.0 : 0.0, // Full start
+  //                     end: isRangeEnd ? 0.0 : 0.0, // Full end
+  //                   ),
+  //                   width: constraints.maxWidth, // Full cell width for continuity
+  //                   height:
+  //                       (shorterSide - widget.calendarStyle.cellMargin.vertical) *
+  //                       widget.calendarStyle.rangeHighlightScale,
+  //                   decoration: BoxDecoration(
+  //                     color: color.withOpacity(0.8),
+  //                     borderRadius: borderRadius,
+  //                   ),
+  //                 ),
+  //               );
+  //             }
+  //           }
+  //         }
+
+  //         if (rangeHighlight != null) {
+  //           children.add(rangeHighlight);
+  //         }
+
+  //         final isToday = isSameDay(day, widget.currentDay);
+  //         final isDisabled = _isDayDisabled(day);
+  //         final isWeekend = _isWeekend(day, weekendDays: widget.weekendDays);
+
+  //         final content = CellContent(
+  //           key: ValueKey('CellContent-${day.year}-${day.month}-${day.day}'),
+  //           day: day,
+  //           focusedDay: focusedDay,
+  //           calendarStyle: widget.calendarStyle,
+  //           calendarBuilders: widget.calendarBuilders,
+  //           isTodayHighlighted: widget.calendarStyle.isTodayHighlighted,
+  //           isToday: isToday,
+  //           isSelected: widget.selectedDayPredicate?.call(day) ?? false,
+  //           isRangeStart: isRangeStart,
+  //           isRangeEnd: isRangeEnd,
+  //           isWithinRange: isWithinRange,
+  //           isOutside: isOutside,
+  //           isDisabled: isDisabled,
+  //           isWeekend: isWeekend,
+  //           isHoliday: widget.holidayPredicate?.call(day) ?? false,
+  //           locale: widget.locale,
+  //         );
+
+  //         children.add(content);
+
+  //         if (widget.loadEventsForDisabledDays || !isDisabled) {
+  //           final events = widget.eventLoader?.call(day) ?? [];
+  //           Widget? markerWidget = widget.calendarBuilders.markerBuilder?.call(
+  //             context,
+  //             day,
+  //             events,
+  //           );
+
+  //           if (events.isNotEmpty && markerWidget == null) {
+  //             final center = constraints.maxHeight / 2;
+
+  //             final markerSize =
+  //                 widget.calendarStyle.markerSize ??
+  //                 (shorterSide - widget.calendarStyle.cellMargin.vertical) *
+  //                     widget.calendarStyle.markerSizeScale;
+
+  //             final markerAutoAlignmentTop =
+  //                 center +
+  //                 (shorterSide - widget.calendarStyle.cellMargin.vertical) / 2 -
+  //                 (markerSize * widget.calendarStyle.markersAnchor);
+
+  //             markerWidget = PositionedDirectional(
+  //               top:
+  //                   widget.calendarStyle.markersAutoAligned
+  //                       ? markerAutoAlignmentTop
+  //                       : widget.calendarStyle.markersOffset.top,
+  //               bottom:
+  //                   widget.calendarStyle.markersAutoAligned
+  //                       ? null
+  //                       : widget.calendarStyle.markersOffset.bottom,
+  //               start:
+  //                   widget.calendarStyle.markersAutoAligned
+  //                       ? null
+  //                       : widget.calendarStyle.markersOffset.start,
+  //               end:
+  //                   widget.calendarStyle.markersAutoAligned
+  //                       ? null
+  //                       : widget.calendarStyle.markersOffset.end,
+  //               child: Row(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children:
+  //                     events
+  //                         .take(widget.calendarStyle.markersMaxCount)
+  //                         .map(
+  //                           (event) => _buildSingleMarker(day, event, markerSize),
+  //                         )
+  //                         .toList(),
+  //               ),
+  //             );
+  //           }
+
+  //           if (markerWidget != null) {
+  //             children.add(markerWidget);
+  //           }
+  //         }
+
+  //         return Stack(
+  //           alignment: widget.calendarStyle.markersAlignment,
+  //           clipBehavior:
+  //               widget.calendarStyle.canMarkersOverflow
+  //                   ? Clip.none
+  //                   : Clip.hardEdge,
+  //           children: children,
+  //         );
+  //       },
+  //     );
+  //   }
   Widget _buildCell(DateTime day, DateTime focusedDay) {
     final isOutside = day.month != focusedDay.month;
-
     if (isOutside && _shouldBlockOutsideDays) {
       return Container();
     }
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final shorterSide =
             constraints.maxHeight > constraints.maxWidth
                 ? constraints.maxWidth
                 : constraints.maxHeight;
-
         final children = <Widget>[];
-
-        final isWithinRange = _isWithinRange(day);
-
-        final isRangeStart = isSameDay(day, widget.rangeStartDay);
-        final isRangeEnd = isSameDay(day, widget.rangeEndDay);
-
+        final isWithinRange = _isWithinRangeMulti(day);
+        final isRangeStart = _isRangeStartDay(day);
+        final isRangeEnd = _isRangeEndDay(day);
         Widget? rangeHighlight = widget.calendarBuilders.rangeHighlightBuilder
             ?.call(context, day, isWithinRange);
-
         if (rangeHighlight == null) {
           if (isWithinRange) {
-            Color highlightColor = widget.calendarStyle.rangeHighlightColor;
-
-            // Use per-range color if we have custom multi-ranges
+            Color? color = widget.calendarStyle.rangeHighlightColor;
             if (widget.multiRanges.isNotEmpty) {
-              highlightColor = getRangeColor(day) ?? highlightColor;
+              color = getRangeColor(day) ?? color;
             }
-
-            rangeHighlight = Center(
-              child: Container(
-                margin: EdgeInsetsDirectional.only(
-                  start: isRangeStart ? constraints.maxWidth * 0.5 : 0.0,
-                  end: isRangeEnd ? constraints.maxWidth * 0.5 : 0.0,
+            if (color != null) {
+              BorderRadius? borderRadius;
+              final bool isSingleDay = isRangeStart && isRangeEnd;
+              if (isSingleDay) {
+                borderRadius = BorderRadius.circular(
+                  999,
+                ); // Full circle for single-day range
+                // Alternative: BorderRadius.circular(50) for less aggressive rounding
+              } else {
+                if (isRangeStart) {
+                  borderRadius = const BorderRadius.horizontal(
+                    left: Radius.circular(20),
+                  );
+                } else if (isRangeEnd) {
+                  borderRadius = const BorderRadius.horizontal(
+                    right: Radius.circular(20),
+                  );
+                }
+                // Middle days: borderRadius remains null (rectangle)
+              }
+              rangeHighlight = Center(
+                child: Container(
+                  margin: EdgeInsetsDirectional.only(
+                    start: isRangeStart ? 0.0 : 0.0, // Full start
+                    end: isRangeEnd ? 0.0 : 0.0, // Full end
+                  ),
+                  width: constraints.maxWidth, // Full cell width for continuity
+                  height:
+                      (shorterSide - widget.calendarStyle.cellMargin.vertical) *
+                      widget.calendarStyle.rangeHighlightScale,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.8),
+                    borderRadius: borderRadius,
+                  ),
                 ),
-                height:
-                    (shorterSide - widget.calendarStyle.cellMargin.vertical) *
-                    widget.calendarStyle.rangeHighlightScale,
-                //color: widget.calendarStyle.rangeHighlightColor,
-                color: highlightColor.withOpacity(0.8),
-              ),
-            );
+              );
+            }
           }
         }
-
         if (rangeHighlight != null) {
           children.add(rangeHighlight);
         }
-
         final isToday = isSameDay(day, widget.currentDay);
         final isDisabled = _isDayDisabled(day);
         final isWeekend = _isWeekend(day, weekendDays: widget.weekendDays);
-
         final content = CellContent(
           key: ValueKey('CellContent-${day.year}-${day.month}-${day.day}'),
           day: day,
@@ -661,9 +852,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
           isHoliday: widget.holidayPredicate?.call(day) ?? false,
           locale: widget.locale,
         );
-
         children.add(content);
-
         if (widget.loadEventsForDisabledDays || !isDisabled) {
           final events = widget.eventLoader?.call(day) ?? [];
           Widget? markerWidget = widget.calendarBuilders.markerBuilder?.call(
@@ -671,20 +860,16 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             day,
             events,
           );
-
           if (events.isNotEmpty && markerWidget == null) {
             final center = constraints.maxHeight / 2;
-
             final markerSize =
                 widget.calendarStyle.markerSize ??
                 (shorterSide - widget.calendarStyle.cellMargin.vertical) *
                     widget.calendarStyle.markerSizeScale;
-
             final markerAutoAlignmentTop =
                 center +
                 (shorterSide - widget.calendarStyle.cellMargin.vertical) / 2 -
                 (markerSize * widget.calendarStyle.markersAnchor);
-
             markerWidget = PositionedDirectional(
               top:
                   widget.calendarStyle.markersAutoAligned
@@ -714,12 +899,10 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
               ),
             );
           }
-
           if (markerWidget != null) {
             children.add(markerWidget);
           }
         }
-
         return Stack(
           alignment: widget.calendarStyle.markersAlignment,
           clipBehavior:
@@ -757,27 +940,15 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     return normalizeDate(date).difference(DateTime.utc(date.year)).inDays + 1;
   }
 
-  bool _isWithinRange(DateTime day) {
-    // Check multi ranges first (multi-purpose)
-    for (var range in widget.multiRanges) {
-      if (isSameDay(day, range.start) || isSameDay(day, range.end)) {
-        return true;
-      }
-      if (day.isAfter(range.start) && day.isBefore(range.end)) {
-        return true;
-      }
+  bool _isWithinRange(DateTime day, DateTime start, DateTime end) {
+    if (isSameDay(day, start) || isSameDay(day, end)) {
+      return true;
     }
-    // Original single range fallback using widget props
-    final rangeStart = widget.rangeStartDay;
-    final rangeEnd = widget.rangeEndDay;
-    if (rangeStart != null && rangeEnd != null) {
-      if (isSameDay(day, rangeStart) || isSameDay(day, rangeEnd)) {
-        return true;
-      }
-      if (day.isAfter(rangeStart) && day.isBefore(rangeEnd)) {
-        return true;
-      }
+
+    if (day.isAfter(start) && day.isBefore(end)) {
+      return true;
     }
+
     return false;
   }
 
@@ -830,13 +1001,53 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     return weekendDays.contains(day.weekday);
   }
 
+  bool _isWithinRangeMulti(DateTime day) {
+    // Check multi ranges first
+    for (var range in widget.multiRanges) {
+      if (isSameDay(day, range.start) || isSameDay(day, range.end)) {
+        return true;
+      }
+      if (day.isAfter(range.start) && day.isBefore(range.end)) {
+        return true;
+      }
+    }
+    // Original single range fallback using widget props
+    final rangeStart = widget.rangeStartDay;
+    final rangeEnd = widget.rangeEndDay;
+    if (rangeStart != null && rangeEnd != null) {
+      if (isSameDay(day, rangeStart) || isSameDay(day, rangeEnd)) {
+        return true;
+      }
+      if (day.isAfter(rangeStart) && day.isBefore(rangeEnd)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool _isRangeStartDay(DateTime day) {
+    for (var range in widget.multiRanges) {
+      if (isSameDay(day, range.start)) return true;
+    }
+    if (isSameDay(day, widget.rangeStartDay)) return true;
+    return false;
+  }
+
+  bool _isRangeEndDay(DateTime day) {
+    for (var range in widget.multiRanges) {
+      if (isSameDay(day, range.end)) return true;
+    }
+    if (isSameDay(day, widget.rangeEndDay)) return true;
+    return false;
+  }
+
   Color? getRangeColor(DateTime day) {
     for (var range in widget.multiRanges) {
       if (day.isAfter(range.start.subtract(const Duration(days: 1))) &&
           day.isBefore(range.end.add(const Duration(days: 1)))) {
-        return range.color; // Direct from range (multi-purpose)
+        return range.color;
       }
     }
-    return null; // Fallback to original if no multi
+    return null;
   }
 }
