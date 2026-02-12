@@ -616,7 +616,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             if (color != null) {
               BorderRadius? borderRadius;
 
-              final bool isRTL = widget.isRtl;
+              final bool isRTL_ = widget.isRtl;
               final bool isSingleDay = isRangeStart && isRangeEnd;
 
               if (isSingleDay) {
@@ -625,8 +625,8 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                 ); // pill / circle – same in both directions
               } else {
                 // Flip logical start/end for visual rounding in RTL
-                final bool visualStart = isRTL ? isRangeEnd : isRangeStart;
-                final bool visualEnd = isRTL ? isRangeStart : isRangeEnd;
+                final bool visualStart = isRTL_ ? isRangeEnd : isRangeStart;
+                final bool visualEnd = isRTL_ ? isRangeStart : isRangeEnd;
 
                 borderRadius = BorderRadius.horizontal(
                   left: Radius.circular(visualStart ? 20 : 0),
