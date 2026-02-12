@@ -612,29 +612,40 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             }
             if (color != null) {
               BorderRadius? borderRadius;
-              final bool isSingleDay = isRangeStart && isRangeEnd;
 
               final bool isRTL =
                   Directionality.of(context) == TextDirection.rtl;
+              final bool isSingleDay = isRangeStart && isRangeEnd;
 
               if (isSingleDay) {
                 borderRadius = BorderRadius.circular(
                   999,
-                ); // or 50, 30, etc. – full pill/circle
-              } else {
-                // Multi-day range
-                if (isRangeStart) {
-                  borderRadius = BorderRadius.horizontal(
-                    left: Radius.circular(isRTL ? 0 : 20),
-                    right: Radius.circular(isRTL ? 20 : 0),
-                  );
-                } else if (isRangeEnd) {
-                  borderRadius = BorderRadius.horizontal(
-                    left: Radius.circular(isRTL ? 20 : 0),
-                    right: Radius.circular(isRTL ? 0 : 20),
-                  );
-                }
-                // middle days → borderRadius stays null → square/rectangle
+                ); // pill works same in both
+              } else if (isWithinRange) {
+                // Use Directional → automatically handles LTR/RTL
+                // But we still need to decide which "side" is outer based on direction
+
+                final Radius outerRadius = const Radius.circular(20);
+                final Radius innerRadius = Radius.zero;
+
+                borderRadius = BorderRadiusDirectional.only(
+                  topStart:
+                      isRangeStart || (isRTL && isRangeEnd)
+                          ? outerRadius
+                          : innerRadius,
+                  bottomStart:
+                      isRangeStart || (isRTL && isRangeEnd)
+                          ? outerRadius
+                          : innerRadius,
+                  topEnd:
+                      isRangeEnd || (!isRTL && isRangeStart)
+                          ? outerRadius
+                          : innerRadius,
+                  bottomEnd:
+                      isRangeEnd || (!isRTL && isRangeStart)
+                          ? outerRadius
+                          : innerRadius,
+                );
               }
               rangeHighlight = Center(
                 child: Container(
