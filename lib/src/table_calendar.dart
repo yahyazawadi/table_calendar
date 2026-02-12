@@ -792,7 +792,6 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             if (color != null) {
               BorderRadius? borderRadius;
               final bool isSingleDay = isRangeStart && isRangeEnd;
-              BorderRadius? borderRadius;
 
               final bool isRTL =
                   Directionality.of(context) == TextDirection.rtl;
