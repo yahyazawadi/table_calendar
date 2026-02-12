@@ -792,22 +792,29 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             if (color != null) {
               BorderRadius? borderRadius;
               final bool isSingleDay = isRangeStart && isRangeEnd;
+              BorderRadius? borderRadius;
+
+              final bool isRTL =
+                  Directionality.of(context) == TextDirection.rtl;
+
               if (isSingleDay) {
                 borderRadius = BorderRadius.circular(
                   999,
-                ); // Full circle for single-day range
-                // Alternative: BorderRadius.circular(50) for less aggressive rounding
+                ); // or 50, 30, etc. – full pill/circle
               } else {
+                // Multi-day range
                 if (isRangeStart) {
-                  borderRadius = const BorderRadius.horizontal(
-                    left: Radius.circular(20),
+                  borderRadius = BorderRadius.horizontal(
+                    left: Radius.circular(isRTL ? 0 : 20),
+                    right: Radius.circular(isRTL ? 20 : 0),
                   );
                 } else if (isRangeEnd) {
-                  borderRadius = const BorderRadius.horizontal(
-                    right: Radius.circular(20),
+                  borderRadius = BorderRadius.horizontal(
+                    left: Radius.circular(isRTL ? 20 : 0),
+                    right: Radius.circular(isRTL ? 0 : 20),
                   );
                 }
-                // Middle days: borderRadius remains null (rectangle)
+                // middle days → borderRadius stays null → square/rectangle
               }
               rangeHighlight = Center(
                 child: Container(
@@ -815,6 +822,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                     start: isRangeStart ? 0.0 : 0.0, // Full start
                     end: isRangeEnd ? 0.0 : 0.0, // Full end
                   ),
+
                   width: constraints.maxWidth, // Full cell width for continuity
                   height:
                       (shorterSide - widget.calendarStyle.cellMargin.vertical) *
