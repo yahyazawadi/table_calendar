@@ -616,7 +616,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             if (color != null) {
               BorderRadius? borderRadius;
 
-              final bool isRTL_ = widget.isRtl;
+              final bool isRTL_ = widget.isRtl!;
               final bool isSingleDay = isRangeStart && isRangeEnd;
 
               if (isSingleDay) {
