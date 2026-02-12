@@ -35,6 +35,8 @@ class TableCalendar<T> extends StatefulWidget {
   /// If nothing is provided, a default locale will be used.
   final dynamic locale;
 
+  final bool? isRtl;
+
   /// The start of the selected day range.
   final DateTime? rangeStartDay;
 
@@ -224,6 +226,7 @@ class TableCalendar<T> extends StatefulWidget {
     this.rangeEndDay,
     this.weekendDays = const [DateTime.saturday, DateTime.sunday],
     this.calendarFormat = CalendarFormat.month,
+    this.isRtl,
     this.availableCalendarFormats = const {
       CalendarFormat.month: 'Month',
       CalendarFormat.twoWeeks: '2 weeks',
@@ -613,38 +616,21 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             if (color != null) {
               BorderRadius? borderRadius;
 
-              final bool isRTL =
-                  Directionality.of(context) == TextDirection.rtl;
+              final bool isRTL = widget.isRtl;
               final bool isSingleDay = isRangeStart && isRangeEnd;
 
               if (isSingleDay) {
                 borderRadius = BorderRadius.circular(
                   999,
-                ); // pill works same in both
-              } else if (isWithinRange) {
-                // Use Directional → automatically handles LTR/RTL
-                // But we still need to decide which "side" is outer based on direction
+                ); // pill / circle – same in both directions
+              } else {
+                // Flip logical start/end for visual rounding in RTL
+                final bool visualStart = isRTL ? isRangeEnd : isRangeStart;
+                final bool visualEnd = isRTL ? isRangeStart : isRangeEnd;
 
-                final Radius outerRadius = const Radius.circular(20);
-                final Radius innerRadius = Radius.zero;
-
-                borderRadius = BorderRadiusDirectional.only(
-                  topStart:
-                      isRangeStart || (isRTL && isRangeEnd)
-                          ? outerRadius
-                          : innerRadius,
-                  bottomStart:
-                      isRangeStart || (isRTL && isRangeEnd)
-                          ? outerRadius
-                          : innerRadius,
-                  topEnd:
-                      isRangeEnd || (!isRTL && isRangeStart)
-                          ? outerRadius
-                          : innerRadius,
-                  bottomEnd:
-                      isRangeEnd || (!isRTL && isRangeStart)
-                          ? outerRadius
-                          : innerRadius,
+                borderRadius = BorderRadius.horizontal(
+                  left: Radius.circular(visualStart ? 20 : 0),
+                  right: Radius.circular(visualEnd ? 20 : 0),
                 );
               }
               rangeHighlight = Center(
