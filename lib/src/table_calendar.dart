@@ -35,7 +35,7 @@ class TableCalendar<T> extends StatefulWidget {
   /// If nothing is provided, a default locale will be used.
   final dynamic locale;
 
-  final bool? isRtl;
+  final bool isRtl;
 
   /// The start of the selected day range.
   final DateTime? rangeStartDay;
@@ -226,7 +226,7 @@ class TableCalendar<T> extends StatefulWidget {
     this.rangeEndDay,
     this.weekendDays = const [DateTime.saturday, DateTime.sunday],
     this.calendarFormat = CalendarFormat.month,
-    this.isRtl,
+    this.isRtl = false,
     this.availableCalendarFormats = const {
       CalendarFormat.month: 'Month',
       CalendarFormat.twoWeeks: '2 weeks',
