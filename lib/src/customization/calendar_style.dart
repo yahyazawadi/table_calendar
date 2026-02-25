@@ -63,6 +63,13 @@ class CalendarStyle {
 
   /// Color of range selection highlight.
   final Color rangeHighlightColor;
+  //fuck 4 lines
+
+  /// Color for the border around range highlights (defaults to transparent = no border).
+  final Color? rangeBorderColor;
+
+  /// Width for the range border (defaults to 1.0).
+  final double rangeBorderWidth;
 
   /// Determines if day cells that do not match the currently focused month should be visible.
   ///
@@ -179,6 +186,9 @@ class CalendarStyle {
     this.cellAlignment = Alignment.center,
     this.markersOffset = const PositionedOffset(),
     this.rangeHighlightColor = const Color(0xFFBBDDFF),
+    //fuck 2 lines
+    this.rangeBorderColor,
+    this.rangeBorderWidth = 1.0,
     this.markerDecoration = const BoxDecoration(
       color: Color(0xFF263238),
       shape: BoxShape.circle,
@@ -230,8 +240,10 @@ class CalendarStyle {
     ),
     this.weekendTextStyle = const TextStyle(color: Color(0xFF5A5A5A)),
     this.weekendDecoration = const BoxDecoration(shape: BoxShape.circle),
-    this.weekNumberTextStyle =
-        const TextStyle(fontSize: 12, color: Color(0xFFBFBFBF)),
+    this.weekNumberTextStyle = const TextStyle(
+      fontSize: 12,
+      color: Color(0xFFBFBFBF),
+    ),
     this.defaultTextStyle = const TextStyle(),
     this.defaultDecoration = const BoxDecoration(shape: BoxShape.circle),
     this.rowDecoration = const BoxDecoration(),
