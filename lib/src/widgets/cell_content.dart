@@ -100,8 +100,8 @@ class CellContent extends StatelessWidget {
             child: Text(
               text,
               style:
-                  calendarStyle.selectedTextStyle ??
                   dayTextStyle ??
+                  calendarStyle.selectedTextStyle ??
                   calendarStyle.defaultTextStyle,
             ),
           );
@@ -117,8 +117,8 @@ class CellContent extends StatelessWidget {
             child: Text(
               text,
               style:
-                  calendarStyle.rangeStartTextStyle ??
                   dayTextStyle ??
+                  calendarStyle.rangeStartTextStyle ??
                   calendarStyle.defaultTextStyle,
             ),
           );
@@ -134,8 +134,8 @@ class CellContent extends StatelessWidget {
             child: Text(
               text,
               style:
-                  calendarStyle.rangeEndTextStyle ??
                   dayTextStyle ??
+                  calendarStyle.rangeEndTextStyle ??
                   calendarStyle.defaultTextStyle,
             ),
           );
@@ -151,8 +151,8 @@ class CellContent extends StatelessWidget {
             child: Text(
               text,
               style:
-                  calendarStyle.todayTextStyle ??
                   dayTextStyle ??
+                  calendarStyle.todayTextStyle ??
                   calendarStyle.defaultTextStyle,
             ),
           );
@@ -185,8 +185,8 @@ class CellContent extends StatelessWidget {
             child: Text(
               text,
               style:
-                  calendarStyle.withinRangeTextStyle ??
                   dayTextStyle ??
+                  calendarStyle.withinRangeTextStyle ??
                   calendarStyle.defaultTextStyle,
             ),
           );
@@ -202,8 +202,8 @@ class CellContent extends StatelessWidget {
             child: Text(
               text,
               style:
-                  calendarStyle.outsideTextStyle ??
                   dayTextStyle ??
+                  calendarStyle.outsideTextStyle ??
                   calendarStyle.defaultTextStyle,
             ),
           );
