@@ -609,43 +609,40 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             ?.call(context, day, isWithinRange);
         if (rangeHighlight == null) {
           if (isWithinRange) {
-            Color? color = widget.calendarStyle.rangeHighlightColor;
-            if (widget.multiRanges.isNotEmpty) {
-              color = getRangeColor(day) ?? color;
-            }
-            if (color != null) {
-              BorderRadius? borderRadius;
+            // Prioritize multi-range phase colors first, never fall back to bad color
+            Color? color =
+                widget.multiRanges.isNotEmpty ? getRangeColor(day) : null;
 
-              final bool isRTL_ = widget.isRtl!;
+            if (color == null) {
+              color = widget.calendarStyle.rangeHighlightColor;
+            }
+
+            if (color != null && color != Colors.transparent) {
               final bool isSingleDay = isRangeStart && isRangeEnd;
 
+              BorderRadius? borderRadius;
+              final bool isRTL_ = widget.isRtl!;
               if (isSingleDay) {
-                borderRadius = BorderRadius.circular(
-                  999,
-                ); // pill / circle – same in both directions
+                borderRadius = BorderRadius.circular(999);
               } else {
-                // Flip logical start/end for visual rounding in RTL
                 final bool visualStart = isRTL_ ? isRangeEnd : isRangeStart;
                 final bool visualEnd = isRTL_ ? isRangeStart : isRangeEnd;
-
                 borderRadius = BorderRadius.horizontal(
                   left: Radius.circular(visualStart ? 20 : 0),
                   right: Radius.circular(visualEnd ? 20 : 0),
                 );
               }
+
               rangeHighlight = Center(
                 child: Container(
-                  margin: EdgeInsetsDirectional.only(
-                    start: isRangeStart ? 0.0 : 0.0, // Full start
-                    end: isRangeEnd ? 0.0 : 0.0, // Full end
-                  ),
-
-                  width: constraints.maxWidth, // Full cell width for continuity
+                  width: constraints.maxWidth,
                   height:
                       (shorterSide - widget.calendarStyle.cellMargin.vertical) *
                       widget.calendarStyle.rangeHighlightScale,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.8),
+                    color: color.withOpacity(
+                      0.55,
+                    ), // nicer opacity for phase colors
                     borderRadius: borderRadius,
                   ),
                 ),
