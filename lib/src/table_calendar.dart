@@ -607,27 +607,25 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             ?.call(context, day, isWithinRange);
         if (rangeHighlight == null) {
           if (isWithinRange) {
-            // Prioritize multi-range phase colors first, never fall back to bad color
-            Color? color =
-                widget.multiRanges.isNotEmpty ? getRangeColor(day) : null;
-
-            if (color == null) {
-              color = widget.calendarStyle.rangeHighlightColor;
-            }
+            // Prioritize multi-range phase colors first
+            Color? color = widget.multiRanges.isNotEmpty
+                ? getRangeColor(day)
+                : widget.calendarStyle.rangeHighlightColor;
 
             if (color != null && color != Colors.transparent) {
-              // Find the matching range to get isPredicted and opacity
+              // Get the actual DateRange so we can use its opacity + isPredicted
               final matchingRange = widget.multiRanges.firstWhere(
                 (r) => !day.isBefore(r.start) && !day.isAfter(r.end),
                 orElse: () => DateRange(
                   start: day,
                   end: day,
-                  color: color,
+                  color: color!, // safe because we checked null above
                 ),
               );
 
               final bool isPredicted = matchingRange.isPredicted;
-              final double rangeOpacity = matchingRange.opacity;
+              final double rangeOpacity =
+                  matchingRange.opacity; // ← this is the param we want
 
               final bool isSingleDay = isRangeStart && isRangeEnd;
 
@@ -651,7 +649,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                       (shorterSide - widget.calendarStyle.cellMargin.vertical) *
                           widget.calendarStyle.rangeHighlightScale,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(rangeOpacity),
+                    color: color.withOpacity(rangeOpacity), // ← uses your param
                     borderRadius: borderRadius,
                     border: isPredicted
                         ? Border.all(
