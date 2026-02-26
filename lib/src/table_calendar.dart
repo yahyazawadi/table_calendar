@@ -3,7 +3,7 @@
 
 import 'shared/date_range.dart';
 import 'dart:math';
-import 'package:flutter/material.dart';
+
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
@@ -647,12 +647,6 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.8),
                     borderRadius: borderRadius,
-                    border: Border.all(
-                      color:
-                          widget.calendarStyle.rangeBorderColor ??
-                          Colors.transparent,
-                      width: widget.calendarStyle.rangeBorderWidth,
-                    ),
                   ),
                 ),
               );
