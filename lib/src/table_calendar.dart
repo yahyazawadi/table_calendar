@@ -3,6 +3,7 @@
 
 import 'shared/date_range.dart';
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -607,25 +608,29 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             ?.call(context, day, isWithinRange);
         if (rangeHighlight == null) {
           if (isWithinRange) {
-            // Prioritize multi-range phase colors first
-            Color? color = widget.multiRanges.isNotEmpty
-                ? getRangeColor(day)
-                : widget.calendarStyle.rangeHighlightColor;
+            // Prioritize multi-range phase colors first, never fall back to bad color
+            Color? color =
+                widget.multiRanges.isNotEmpty ? getRangeColor(day) : null;
+
+            if (color == null) {
+              color = widget.calendarStyle.rangeHighlightColor;
+            }
 
             if (color != null && color != Colors.transparent) {
-              // Get the actual DateRange so we can use its opacity + isPredicted
+              // Find the matching range to get isPredicted and opacity
               final matchingRange = widget.multiRanges.firstWhere(
                 (r) => !day.isBefore(r.start) && !day.isAfter(r.end),
                 orElse: () => DateRange(
                   start: day,
                   end: day,
-                  color: color!, // safe because we checked null above
+                  color: color!,
+                  opacity: 0.55, // fallback only if no match
                 ),
               );
 
               final bool isPredicted = matchingRange.isPredicted;
               final double rangeOpacity =
-                  matchingRange.opacity; // ← this is the param we want
+                  matchingRange.opacity; // ← THIS is what we want!
 
               final bool isSingleDay = isRangeStart && isRangeEnd;
 
@@ -649,12 +654,15 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                       (shorterSide - widget.calendarStyle.cellMargin.vertical) *
                           widget.calendarStyle.rangeHighlightScale,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(rangeOpacity), // ← uses your param
+                    color: color
+                        .withOpacity(rangeOpacity), // ← now uses the param!
                     borderRadius: borderRadius,
                     border: isPredicted
                         ? Border.all(
                             color: color.withOpacity(0.85),
-                            width: 1.8,
+                            width: 1.5,
+                            style: BorderStyle
+                                .solid, // ← keep solid, but low width = dotted illusion
                           )
                         : null,
                   ),
