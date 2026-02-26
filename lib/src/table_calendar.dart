@@ -3,7 +3,7 @@
 
 import 'shared/date_range.dart';
 import 'dart:math';
-
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
@@ -623,13 +623,11 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                   start: day,
                   end: day,
                   color: color,
-                  opacity: 0.55, // fallback only if no match
                 ),
               );
 
               final bool isPredicted = matchingRange.isPredicted;
-              final double rangeOpacity =
-                  matchingRange.opacity; // ← THIS is what we want!
+              final double rangeOpacity = matchingRange.opacity;
 
               final bool isSingleDay = isRangeStart && isRangeEnd;
 
@@ -653,15 +651,12 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                       (shorterSide - widget.calendarStyle.cellMargin.vertical) *
                           widget.calendarStyle.rangeHighlightScale,
                   decoration: BoxDecoration(
-                    color: color
-                        .withOpacity(rangeOpacity), // ← now uses the param!
+                    color: color.withOpacity(rangeOpacity),
                     borderRadius: borderRadius,
                     border: isPredicted
                         ? Border.all(
                             color: color.withOpacity(0.85),
-                            width: 1.5,
-                            style: BorderStyle
-                                .solid, // ← keep solid, but low width = dotted illusion
+                            width: 1.8,
                           )
                         : null,
                   ),
