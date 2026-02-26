@@ -647,6 +647,12 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.8),
                     borderRadius: borderRadius,
+                    border: Border.all(
+                      color:
+                          widget.calendarStyle.rangeBorderColor ??
+                          Colors.transparent,
+                      width: widget.calendarStyle.rangeBorderWidth,
+                    ),
                   ),
                 ),
               );
