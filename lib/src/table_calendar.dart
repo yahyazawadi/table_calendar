@@ -868,8 +868,8 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
 
   Color? getRangeColor(DateTime day) {
     for (var range in widget.multiRanges) {
-      if (day.isAfter(range.start.subtract(const Duration(days: 1))) &&
-          day.isBefore(range.end.add(const Duration(days: 1)))) {
+      // Proper inclusive check (start <= day <= end) — works perfectly for single-day ranges
+      if (!day.isBefore(range.start) && !day.isAfter(range.end)) {
         return range.color;
       }
     }
