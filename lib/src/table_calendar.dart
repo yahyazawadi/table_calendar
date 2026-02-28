@@ -608,7 +608,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             ?.call(context, day, isWithinRange);
         if (rangeHighlight == null) {
           if (isWithinRange) {
-            // ROBUST LONGEST-RANGE MATCH - fixes day 19 picking 19-19 null
+            // FORCE LONGEST MATCH - fixes day 19 picking phantom 19-19 null
             final candidates = widget.multiRanges
                 .where(
                   (r) => !day.isBefore(r.start) && !day.isAfter(r.end),
@@ -623,12 +623,11 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                         ? a
                         : b);
 
-            // Debug for day 19
             if (day.day == 19 && day.month == 2 && day.year == 2026) {
-              debugPrint('DAY 19 FOUND - candidates: ${candidates.length}');
+              debugPrint('DAY 19 FOUND - ${candidates.length} candidates');
               for (var c in candidates) {
                 debugPrint(
-                    '  → ${c.start.day}-${c.end.day} ${c.phase ?? "null"} gradient:${c.gradientToColor != null}');
+                    '  → ${c.start.day}-${c.end.day} ${c.phase ?? "null"} gradientTo:${c.gradientToColor != null}');
               }
             }
 
