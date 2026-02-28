@@ -612,11 +612,20 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
               debugPrint('DAY 19 FOUND - checking ranges...');
             }
 
-            final matchingRange = widget.multiRanges.firstWhere(
-              (r) => !day.isBefore(r.start) && !day.isAfter(r.end),
-              orElse: () =>
-                  DateRange(start: day, end: day, color: Colors.transparent),
-            );
+            // FIXED ROBUST MATCHING - picks longest real range
+            final candidates = widget.multiRanges
+                .where(
+                  (r) => !day.isBefore(r.start) && !day.isAfter(r.end),
+                )
+                .toList();
+
+            final matchingRange = candidates.isEmpty
+                ? DateRange(start: day, end: day, color: Colors.transparent)
+                : candidates.reduce((a, b) =>
+                    a.end.difference(a.start).inDays >=
+                            b.end.difference(b.start).inDays
+                        ? a
+                        : b);
 
             if (day.day == 19 && day.month == 2 && day.year == 2026) {
               debugPrint(
