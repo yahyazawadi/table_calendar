@@ -608,66 +608,77 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             ?.call(context, day, isWithinRange);
         if (rangeHighlight == null) {
           if (isWithinRange) {
-            // Prioritize multi-range phase colors first, never fall back to bad color
-            Color? color =
-                widget.multiRanges.isNotEmpty ? getRangeColor(day) : null;
-            if (color == null) {
-              color = widget.calendarStyle.rangeHighlightColor;
+            final matchingRange = widget.multiRanges.firstWhere(
+              (r) => !day.isBefore(r.start) && !day.isAfter(r.end),
+              orElse: () =>
+                  DateRange(start: day, end: day, color: Colors.transparent),
+            );
+
+            final bool isTransition = matchingRange.gradientToColor != null;
+            final double rangeOpacity = matchingRange.opacity;
+
+            Color displayColor = matchingRange.color;
+
+            if (isTransition) {
+              final totalDays =
+                  matchingRange.end.difference(matchingRange.start).inDays;
+              final progress = totalDays == 0
+                  ? 0.5
+                  : matchingRange.start.difference(day).inDays.abs() /
+                      totalDays.toDouble();
+              displayColor = Color.lerp(matchingRange.color,
+                  matchingRange.gradientToColor!, progress)!;
+
+              // White tint (افتح look) from CycleProvider
+              displayColor = Color.lerp(
+                  displayColor, Colors.white, matchingRange.whiteTint)!;
             }
-            if (color != null && color != Colors.transparent) {
-              // Find the matching range to get isPredicted and opacity
-              final matchingRange = widget.multiRanges.firstWhere(
-                (r) => !day.isBefore(r.start) && !day.isAfter(r.end),
-                orElse: () => DateRange(
-                  start: day,
-                  end: day,
-                  color: color!,
-                  opacity: 0.55, // fallback only if no match
-                ),
-              );
-              final bool isPredicted = matchingRange.isPredicted;
-              final double rangeOpacity =
-                  matchingRange.opacity; // ← THIS is what we want!
-              final bool isSingleDay = isRangeStart && isRangeEnd;
-              BorderRadius? borderRadius;
-              final bool isRTL_ = widget.isRtl!;
-              if (isSingleDay) {
-                borderRadius = BorderRadius.circular(999);
-              } else {
-                final bool visualStart = isRTL_ ? isRangeEnd : isRangeStart;
-                final bool visualEnd = isRTL_ ? isRangeStart : isRangeEnd;
-                borderRadius = BorderRadius.horizontal(
-                  left: Radius.circular(visualStart ? 20 : 0),
-                  right: Radius.circular(visualEnd ? 20 : 0),
-                );
-              }
-              rangeHighlight = Center(
-                child: Container(
-                  width: constraints.maxWidth,
-                  height:
-                      (shorterSide - widget.calendarStyle.cellMargin.vertical) *
-                          widget.calendarStyle.rangeHighlightScale,
-                  decoration: BoxDecoration(
-                    borderRadius: borderRadius,
-                    border: null, // remove borders
-                    gradient: matchingRange.phase == 'transition'
-                        ? LinearGradient(
-                            colors: [
-                              color.withOpacity(rangeOpacity), // start full
-                              color.withOpacity(
-                                  rangeOpacity * 0.5) // fade to half
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          )
-                        : null,
-                    color: matchingRange.phase != 'transition'
-                        ? color.withOpacity(isPredicted ? 0.3 : rangeOpacity)
-                        : null, // less opacity for predicted, solid for non-gap
-                  ),
-                ),
-              );
+
+            // First & Last predicted day → circular (even inside transition)
+            DateTime? overallFirst = null;
+            DateTime? overallLast = null;
+            for (var r in widget.multiRanges.where((r) => r.isPredicted)) {
+              if (overallFirst == null || r.start.isBefore(overallFirst))
+                overallFirst = r.start;
+              if (overallLast == null || r.end.isAfter(overallLast))
+                overallLast = r.end;
             }
+
+            final bool isFirstPredicted =
+                overallFirst != null && isSameDay(day, overallFirst);
+            final bool isLastPredicted =
+                overallLast != null && isSameDay(day, overallLast);
+
+            final BorderRadius borderRadius =
+                (isFirstPredicted || isLastPredicted)
+                    ? BorderRadius.circular(999)
+                    : BorderRadius.zero;
+
+            rangeHighlight = Center(
+              child: Container(
+                width: constraints.maxWidth,
+                height:
+                    (shorterSide - widget.calendarStyle.cellMargin.vertical) *
+                        widget.calendarStyle.rangeHighlightScale,
+                decoration: BoxDecoration(
+                  borderRadius: borderRadius,
+                  border: null,
+                  gradient: isTransition
+                      ? LinearGradient(
+                          colors: [
+                            displayColor.withOpacity(rangeOpacity),
+                            displayColor.withOpacity(rangeOpacity * 0.75),
+                          ],
+                          begin: matchingRange.gradientBegin,
+                          end: matchingRange.gradientEnd,
+                        )
+                      : null,
+                  color: !isTransition
+                      ? displayColor.withOpacity(rangeOpacity)
+                      : null,
+                ),
+              ),
+            );
           }
         }
         if (rangeHighlight != null) {
