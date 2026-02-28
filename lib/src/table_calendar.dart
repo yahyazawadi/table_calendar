@@ -611,11 +611,9 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             // Prioritize multi-range phase colors first, never fall back to bad color
             Color? color =
                 widget.multiRanges.isNotEmpty ? getRangeColor(day) : null;
-
             if (color == null) {
               color = widget.calendarStyle.rangeHighlightColor;
             }
-
             if (color != null && color != Colors.transparent) {
               // Find the matching range to get isPredicted and opacity
               final matchingRange = widget.multiRanges.firstWhere(
@@ -627,13 +625,10 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                   opacity: 0.55, // fallback only if no match
                 ),
               );
-
               final bool isPredicted = matchingRange.isPredicted;
               final double rangeOpacity =
                   matchingRange.opacity; // ← THIS is what we want!
-
               final bool isSingleDay = isRangeStart && isRangeEnd;
-
               BorderRadius? borderRadius;
               final bool isRTL_ = widget.isRtl!;
               if (isSingleDay) {
@@ -646,7 +641,6 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                   right: Radius.circular(visualEnd ? 20 : 0),
                 );
               }
-
               rangeHighlight = Center(
                 child: Container(
                   width: constraints.maxWidth,
@@ -658,11 +652,11 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                     border: null, // remove borders
                     gradient: matchingRange.phase == 'transition'
                         ? LinearGradient(
-                            // gradient ONLY for gaps
                             colors: [
-                              color.withOpacity(rangeOpacity),
-                              color.withOpacity(rangeOpacity * 0.5)
-                            ], // mix fade
+                              color.withOpacity(rangeOpacity), // start full
+                              color.withOpacity(
+                                  rangeOpacity * 0.5) // fade to half
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           )
