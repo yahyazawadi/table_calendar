@@ -654,17 +654,19 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                       (shorterSide - widget.calendarStyle.cellMargin.vertical) *
                           widget.calendarStyle.rangeHighlightScale,
                   decoration: BoxDecoration(
-                    color: color
-                        .withOpacity(rangeOpacity), // ← now uses the param!
                     borderRadius: borderRadius,
-                    border: isPredicted
-                        ? Border.all(
-                            color: color.withOpacity(0.85),
-                            width: 1.5,
-                            style: BorderStyle
-                                .solid, // ← keep solid, but low width = dotted illusion
-                          )
-                        : null,
+                    border: null, // ← remove all borders (predicted or not)
+                    gradient: isWithinRange && !isPredicted
+                        ? null
+                        : LinearGradient(
+                            // ← gradient for mix/estimated
+                            colors: [
+                              color.withOpacity(rangeOpacity * 0.8),
+                              color.withOpacity(rangeOpacity * 0.3)
+                            ], // fade for nuance
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                   ),
                 ),
               );
