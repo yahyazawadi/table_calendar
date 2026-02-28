@@ -655,18 +655,21 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                           widget.calendarStyle.rangeHighlightScale,
                   decoration: BoxDecoration(
                     borderRadius: borderRadius,
-                    border: null, // ← remove all borders (predicted or not)
-                    gradient: isWithinRange && !isPredicted
-                        ? null
-                        : LinearGradient(
-                            // ← gradient for mix/estimated
+                    border: null, // remove borders
+                    gradient: matchingRange.phase == 'transition'
+                        ? LinearGradient(
+                            // gradient ONLY for gaps
                             colors: [
-                              color.withOpacity(rangeOpacity * 0.8),
-                              color.withOpacity(rangeOpacity * 0.3)
-                            ], // fade for nuance
+                              color.withOpacity(rangeOpacity),
+                              color.withOpacity(rangeOpacity * 0.5)
+                            ], // mix fade
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                          ),
+                          )
+                        : null,
+                    color: matchingRange.phase != 'transition'
+                        ? color.withOpacity(isPredicted ? 0.3 : rangeOpacity)
+                        : null, // less opacity for predicted, solid for non-gap
                   ),
                 ),
               );
