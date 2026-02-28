@@ -608,11 +608,20 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             ?.call(context, day, isWithinRange);
         if (rangeHighlight == null) {
           if (isWithinRange) {
+            if (day.day == 19 && day.month == 2 && day.year == 2026) {
+              debugPrint('DAY 19 FOUND - checking ranges...');
+            }
+
             final matchingRange = widget.multiRanges.firstWhere(
               (r) => !day.isBefore(r.start) && !day.isAfter(r.end),
               orElse: () =>
                   DateRange(start: day, end: day, color: Colors.transparent),
             );
+
+            if (day.day == 19 && day.month == 2 && day.year == 2026) {
+              debugPrint(
+                  '  → Matching range: ${matchingRange.start.day}-${matchingRange.end.day} ${matchingRange.phase} gradient:${matchingRange.gradientToColor != null}');
+            }
 
             final bool isTransition = matchingRange.gradientToColor != null;
             final double rangeOpacity = matchingRange.opacity;
